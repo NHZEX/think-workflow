@@ -1,8 +1,8 @@
 <?php
 
-namespace ZeroDaHero\LaravelWorkflow\Events;
+namespace Zxin\Think\Workflow\Events;
 
-use Illuminate\Contracts\Events\Dispatcher;
+use think\Event;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class DispatcherAdapter implements EventDispatcherInterface
@@ -21,7 +21,7 @@ class DispatcherAdapter implements EventDispatcherInterface
 
     private $plainEvents;
 
-    public function __construct(Dispatcher $dispatcher)
+    public function __construct(Event $dispatcher)
     {
         $this->dispatcher = $dispatcher;
         $this->plainEvents = array_map(function ($event) {
@@ -33,7 +33,7 @@ class DispatcherAdapter implements EventDispatcherInterface
      * Dispatches an event to all registered listeners.
      *
      * @param object      $event     The event to pass to the event handlers/listeners
-     * @param string|null $eventName The name of the event to dispatch. If not supplied,
+     * @param string|null $eventNam e The name of the event to dispatch. If not supplied,
      *                               the class of $event should be used instead.
      *
      * @return object The passed $event MUST be returned
@@ -46,11 +46,11 @@ class DispatcherAdapter implements EventDispatcherInterface
 
         // Only dispatch the class event once
         if ($this->shouldDispatchPlainClassEvent($eventName)) {
-            $this->dispatcher->dispatch($eventToDispatch);
+            $this->dispatcher->trigger($eventToDispatch);
         }
 
         // Dispatch with the Symfony dot syntax event names
-        $this->dispatcher->dispatch($name, $eventToDispatch);
+        $this->dispatcher->trigger($name, $eventToDispatch);
 
         return $eventToDispatch;
     }
@@ -76,6 +76,7 @@ class DispatcherAdapter implements EventDispatcherInterface
             return WorkflowEvent::newFromBase($symfonyEvent);
         }
 
+        /** @var class-string<BaseEvent> $translatedEventClass */
         $translatedEventClass = static::EVENT_MAP[$event];
 
         return $translatedEventClass::newFromBase($symfonyEvent);

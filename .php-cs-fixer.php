@@ -1,20 +1,17 @@
 <?php
 
 $finder = PhpCsFixer\Finder::create()
-    ->exclude('bootstrap/cache')
-    ->exclude('storage')
-    ->exclude('vendor')
-    ->exclude('bower_components')
-    ->exclude('node_modules')
-    ->in(__DIR__)
-    ->name('*.php')
-    ->notName('*.blade.php')
+    ->in([
+        'src',
+        'config',
+        'tests',
+    ])
     ->ignoreDotFiles(true)
     ->ignoreVCS(true);
 
 $config = new PhpCsFixer\Config();
 
-return $config->setFinder($finder)
+return $config
     ->setRules([
         '@PSR2' => true,
         'phpdoc_no_empty_return' => false,
@@ -126,4 +123,6 @@ return $config->setFinder($finder)
             'space_before' => 'none',
         ],
     ])
+    ->setRiskyAllowed(true)
+    ->setFinder($finder)
     ->setLineEnding("\n");

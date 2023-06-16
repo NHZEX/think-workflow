@@ -1,8 +1,8 @@
 <?php
 
-namespace ZeroDaHero\LaravelWorkflow\Events;
+namespace Zxin\Think\Workflow\Events;
 
-use Workflow;
+use Zxin\Think\Workflow\Facades\Workflow;
 use Symfony\Component\Workflow\Event\Event;
 
 /**
@@ -15,6 +15,8 @@ use Symfony\Component\Workflow\Event\Event;
  */
 abstract class BaseEvent extends Event
 {
+    protected ?Event $symfonyProxyEvent = null;
+
     public function __serialize(): array
     {
         return [
@@ -44,12 +46,21 @@ abstract class BaseEvent extends Event
      */
     public static function newFromBase(Event $symfonyEvent)
     {
-        return new static(
+        $proxyEvent = new static(
             $symfonyEvent->getSubject(),
             $symfonyEvent->getMarking(),
             $symfonyEvent->getTransition(),
             $symfonyEvent->getWorkflow(),
             $symfonyEvent->getContext()
         );
+
+        $proxyEvent->setRawEvent($symfonyEvent);
+
+        return $proxyEvent;
+    }
+
+    protected function setRawEvent(Event $symfonyEvent): void
+    {
+        $this->symfonyProxyEvent = $symfonyEvent;
     }
 }

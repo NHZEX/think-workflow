@@ -1,6 +1,6 @@
 <?php
 
-namespace ZeroDaHero\LaravelWorkflow\Traits;
+namespace Zxin\Think\Workflow\Traits;
 
 use Workflow;
 

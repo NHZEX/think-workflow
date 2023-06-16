@@ -1,6 +1,6 @@
 <?php
 
-namespace ZeroDaHero\LaravelWorkflow\Events;
+namespace Zxin\Think\Workflow\Events;
 
 use Symfony\Component\Workflow\Marking;
 use Symfony\Component\Workflow\Transition;
@@ -19,13 +19,9 @@ use Symfony\Component\Workflow\Event\GuardEvent as SymfonyGuardEvent;
  */
 class GuardEvent extends BaseEvent
 {
-    private SymfonyGuardEvent $symfonyProxyEvent;
-
     public function __construct(object $subject, Marking $marking, Transition $transition, WorkflowInterface $workflow = null)
     {
         parent::__construct($subject, $marking, $transition, $workflow);
-
-        $this->symfonyProxyEvent = new SymfonyGuardEvent($subject, $marking, $transition, $workflow);
     }
 
     public function __call($name, $arguments)

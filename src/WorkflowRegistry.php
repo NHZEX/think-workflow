@@ -1,22 +1,22 @@
 <?php
 
-namespace ZeroDaHero\LaravelWorkflow;
+namespace Zxin\Think\Workflow;
 
+use think\Event;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\Workflow;
 use Symfony\Component\Workflow\Definition;
 use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\StateMachine;
 use Symfony\Component\Workflow\DefinitionBuilder;
-use ZeroDaHero\LaravelWorkflow\Events\DispatcherAdapter;
+use Zxin\Think\Workflow\Events\DispatcherAdapter;
+use Zxin\Think\Workflow\MarkingStores\EloquentMarkingStore;
 use Symfony\Component\Workflow\Metadata\InMemoryMetadataStore;
-use Illuminate\Contracts\Events\Dispatcher as EventsDispatcher;
+use Zxin\Think\Workflow\Exceptions\DuplicateWorkflowException;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Zxin\Think\Workflow\Exceptions\RegistryNotTrackedException;
 use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\MarkingStore\MarkingStoreInterface;
-use ZeroDaHero\LaravelWorkflow\MarkingStores\EloquentMarkingStore;
-use ZeroDaHero\LaravelWorkflow\Exceptions\DuplicateWorkflowException;
-use ZeroDaHero\LaravelWorkflow\Exceptions\RegistryNotTrackedException;
 use Symfony\Component\Workflow\SupportStrategy\InstanceOfSupportStrategy;
 
 class WorkflowRegistry
@@ -57,7 +57,7 @@ class WorkflowRegistry
      *
      * @throws \ReflectionException
      */
-    public function __construct(array $config, array $registryConfig = null, EventsDispatcher $laravelDispatcher)
+    public function __construct(array $config, array $registryConfig = null, Event $laravelDispatcher)
     {
         $this->registry = new Registry();
         $this->config = $config;
@@ -75,7 +75,7 @@ class WorkflowRegistry
      * @param  object $subject
      * @param  string $workflowName
      *
-     * @return Workflow
+     * @return \Zxin\Think\Workflow\Facades\Workflow
      */
     public function get($subject, $workflowName = null)
     {
@@ -87,7 +87,7 @@ class WorkflowRegistry
      *
      * @param object $subject
      *
-     * @return Workflow[]
+     * @return \Zxin\Think\Workflow\Facades\Workflow[]
      */
     public function all($subject): array
     {
@@ -97,8 +97,8 @@ class WorkflowRegistry
     /**
      * Add a workflow to the subject
      *
-     * @param Workflow $workflow
-     * @param string   $supportStrategy
+     * @param \Zxin\Think\Workflow\Facades\Workflow $workflow
+     * @param string                                       $supportStrategy
      *
      * @return void
      */
@@ -268,7 +268,7 @@ class WorkflowRegistry
      * @param  Definition            $definition
      * @param  MarkingStoreInterface $markingStore
      *
-     * @return Workflow
+     * @return \Zxin\Think\Workflow\Facades\Workflow
      */
     protected function getWorkflowInstance(
         $name,

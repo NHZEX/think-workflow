@@ -1,6 +1,6 @@
 <?php
 
-namespace ZeroDaHero\LaravelWorkflow\Events;
+namespace Zxin\Think\Workflow\Events;
 
 /**
  * @author Peter Sweets <p.sweets@developers.nl>

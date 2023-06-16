@@ -1,13 +1,15 @@
 <?php
 
-namespace ZeroDaHero\LaravelWorkflow\Commands;
+namespace Zxin\Think\Workflow\Commands;
 
-use Config;
-use Storage;
-use Workflow;
 use Exception;
-use Illuminate\Console\Command;
+use think\console\Input;
+use think\console\Output;
+use think\console\Command;
+use think\console\input\Option;
+use think\console\input\Argument;
 use Symfony\Component\Process\Process;
+use Zxin\Think\Workflow\Facades\Workflow;
 use Symfony\Component\Workflow\StateMachine;
 use Symfony\Component\Workflow\Dumper\GraphvizDumper;
 use Symfony\Component\Workflow\Dumper\StateMachineGraphvizDumper;
@@ -18,47 +20,23 @@ use Symfony\Component\Workflow\Dumper\StateMachineGraphvizDumper;
 class WorkflowDumpCommand extends Command
 {
     /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'workflow:dump
-        {workflow : name of workflow from configuration}
-        {--class= : the support class name}
-        {--format=png : the image format}
-        {--disk=local : the storage disk name}
-        {--path= : the optional path within selected disk}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'GraphvizDumper dumps a workflow as a graphviz file.
-        You can convert the generated dot file with the dot utility (http://www.graphviz.org/):';
-
-    /**
      * Execute the console command.
      *
-     * @return mixed
+     * @param Input  $input
+     * @param Output $output
+     *
+     * @return int
      */
-    public function handle()
+    public function execute(Input $input, Output $output): int
     {
-        $workflowName = $this->argument('workflow');
-        $format = $this->option('format');
-        $class = $this->option('class');
-        $config = Config::get('workflow');
-        $disk = $this->option('disk');
-        $optionalPath = $this->option('path');
+        $config = $this->app->config;
 
-        if ($disk === 'local') {
-            $optionalPath ??= '.';
-        }
-        $path = Storage::disk($disk)->path($optionalPath);
-
-        if ($optionalPath && ! Storage::disk($disk)->exists($optionalPath)) {
-            Storage::disk($disk)->makeDirectory($optionalPath);
-        }
+        $workflowName = $input->getArgument('workflow');
+        $format = $input->getOption('format');
+        $class = $input->getOption('class');
+        $config = $config->get('workflow');
+        //        $optionalPath = $input->getOption('path');
+        $path = \root_path() . "{$workflowName}.{$format}";
 
         if (! isset($config[$workflowName])) {
             throw new Exception("Workflow {$workflowName} is not configured.");
@@ -82,8 +60,21 @@ class WorkflowDumpCommand extends Command
         $dotCommand = ['dot', "-T{$format}", '-o', "{$workflowName}.{$format}"];
 
         $process = new Process($dotCommand);
-        $process->setWorkingDirectory($path);
+        $process->setWorkingDirectory(\dirname($path));
         $process->setInput($dumper->dump($definition));
         $process->mustRun();
+
+        return 0;
+    }
+
+    protected function configure()
+    {
+        $this->setName('workflow:dump')
+            ->addArgument('workflow', Argument::REQUIRED, 'name of workflow from configuration')
+            ->addOption('class', null, Option::VALUE_OPTIONAL, 'the support class name')
+            ->addOption('format', null, Option::VALUE_OPTIONAL, 'the image format', 'png')
+            ->addOption('disk', null, Option::VALUE_OPTIONAL, 'the storage disk name', 'local')
+            ->addOption('path', null, Option::VALUE_OPTIONAL, 'the optional path within selected disk')
+            ->setDescription('GraphvizDumper dumps a workflow as a graphviz file. You can convert the generated dot file with the dot utility (http://www.graphviz.org/):');
     }
 }
