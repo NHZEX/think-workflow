@@ -75,7 +75,7 @@ class WorkflowRegistry
      * @param  object $subject
      * @param  string $workflowName
      *
-     * @return \Zxin\Think\Workflow\Facades\Workflow
+     * @return Workflow
      */
     public function get($subject, $workflowName = null)
     {
@@ -87,7 +87,7 @@ class WorkflowRegistry
      *
      * @param object $subject
      *
-     * @return \Zxin\Think\Workflow\Facades\Workflow[]
+     * @return Workflow[]
      */
     public function all($subject): array
     {
@@ -97,8 +97,8 @@ class WorkflowRegistry
     /**
      * Add a workflow to the subject
      *
-     * @param \Zxin\Think\Workflow\Facades\Workflow $workflow
-     * @param string                                       $supportStrategy
+     * @param Workflow $workflow
+     * @param string   $supportStrategy
      *
      * @return void
      */
@@ -268,7 +268,7 @@ class WorkflowRegistry
      * @param  Definition            $definition
      * @param  MarkingStoreInterface $markingStore
      *
-     * @return \Zxin\Think\Workflow\Facades\Workflow
+     * @return Workflow
      */
     protected function getWorkflowInstance(
         $name,
